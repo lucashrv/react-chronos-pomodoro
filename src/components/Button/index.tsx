@@ -1,11 +1,11 @@
 import styles from "./styles.module.css";
 
-interface ButtonProps extends React.ComponentProps<"button"> {
+interface IButtonProps extends React.ComponentProps<"button"> {
     icon: React.ReactNode;
     color?: "green" | "red";
 }
 
-export function Button(props: ButtonProps) {
+export function Button(props: IButtonProps) {
     const { icon, color = "green", ...rest } = props;
 
     return (
