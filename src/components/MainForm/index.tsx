@@ -1,4 +1,4 @@
-import { PlayCircleIcon } from "lucide-react";
+import { PlayCircleIcon, StopCircleIcon } from "lucide-react";
 import { Button } from "../Button";
 import { Cycles } from "../Cycles";
 import { Input } from "../Input";
@@ -53,6 +53,21 @@ export function MainForm() {
         }));
     };
 
+    function handleInterruptTask() {
+        setState((prev) => ({
+            ...prev,
+            activeTask: null,
+            secondsRemaining: 0,
+            formattedSecondsRemaining: "00:00",
+            task: prev.task.map((task) => {
+                if (prev.activeTask && prev.activeTask.id === task.id) {
+                    return { ...task, interruptDate: Date.now() };
+                }
+                return task;
+            }),
+        }));
+    }
+
     return (
         <form className={styles.form} onSubmit={handleCreateTask}>
             <div className={styles.formRow}>
@@ -60,6 +75,7 @@ export function MainForm() {
                     label="task"
                     placeholder="Digite algo"
                     ref={taskNameInput}
+                    disabled={!!state.activeTask}
                 />
             </div>
 
@@ -74,7 +90,25 @@ export function MainForm() {
             )}
 
             <div className={styles.formRow}>
-                <Button icon={<PlayCircleIcon />} />
+                {!state.activeTask && (
+                    <Button
+                        aria-label="Iniciar nova tarefa"
+                        title="Iniciar nova tarefa"
+                        type="submit"
+                        icon={<PlayCircleIcon />}
+                    />
+                )}
+
+                {!!state.activeTask && (
+                    <Button
+                        ria-label="Interromper tarefa"
+                        title="Interromper tarefa"
+                        type="button"
+                        icon={<StopCircleIcon />}
+                        color="red"
+                        onClick={handleInterruptTask}
+                    />
+                )}
             </div>
         </form>
     );
