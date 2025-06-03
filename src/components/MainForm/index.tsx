@@ -8,11 +8,12 @@ import type { TaskModel } from "../../models/TaskModel";
 import { useTaskContext } from "../../contexts/TaskContext/useTaskContext";
 import { getNextCycle } from "./../../utils/getNextCycle";
 import { getNextCycleType } from "../../utils/getNextCycleType";
-import { formatSecondsToMinutes } from "../../utils/formatSecondsToMinutes";
+import { TaskActionsTypes } from "../../contexts/TaskContext/taskActions";
+import { Tips } from "./Tips";
 
 export function MainForm() {
     const taskNameInput = useRef<HTMLInputElement>(null);
-    const { state, setState } = useTaskContext();
+    const { state, dispatch } = useTaskContext();
 
     //Cycles
     const nextCycle = getNextCycle(state.currentCycle);
@@ -40,32 +41,11 @@ export function MainForm() {
             type: nextCycleType,
         };
 
-        const secondsRemaining = newTask.duration * 60;
-
-        setState((prev) => ({
-            ...prev,
-            activeTask: newTask,
-            currentCycle: nextCycle,
-            secondsRemaining,
-            formattedSecondsRemaining: formatSecondsToMinutes(secondsRemaining),
-            task: [...prev.task, newTask],
-            config: { ...prev.config },
-        }));
+        dispatch({ type: TaskActionsTypes.START_TASK, payload: newTask });
     };
 
     function handleInterruptTask() {
-        setState((prev) => ({
-            ...prev,
-            activeTask: null,
-            secondsRemaining: 0,
-            formattedSecondsRemaining: "00:00",
-            task: prev.task.map((task) => {
-                if (prev.activeTask && prev.activeTask.id === task.id) {
-                    return { ...task, interruptDate: Date.now() };
-                }
-                return task;
-            }),
-        }));
+        dispatch({ type: TaskActionsTypes.INTERRUPT_TASK });
     }
 
     return (
@@ -80,7 +60,7 @@ export function MainForm() {
             </div>
 
             <div className={styles.formRow}>
-                <p>Próximo intervalo é de 25min</p>
+                <Tips />
             </div>
 
             {state.currentCycle > 0 && (
