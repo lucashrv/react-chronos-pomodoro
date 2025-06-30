@@ -10,6 +10,7 @@ import { getNextCycle } from "./../../utils/getNextCycle";
 import { getNextCycleType } from "../../utils/getNextCycleType";
 import { TaskActionsTypes } from "../../contexts/TaskContext/taskActions";
 import { Tips } from "./Tips";
+import { TimerWorkerManager } from "../../workers/timeWorkerManager";
 
 export function MainForm() {
     const taskNameInput = useRef<HTMLInputElement>(null);
@@ -42,6 +43,12 @@ export function MainForm() {
         };
 
         dispatch({ type: TaskActionsTypes.START_TASK, payload: newTask });
+
+        const worker = TimerWorkerManager.getInstance();
+
+        worker.onmessage((event) => {
+            console.log("asd", event.data);
+        });
     };
 
     function handleInterruptTask() {
